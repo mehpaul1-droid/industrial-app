@@ -48,3 +48,18 @@ static Future<Map<String, dynamic>> getDashboard() async {
 
   return jsonDecode(response.body);
 }
+static Future<List<dynamic>> getFarms() async {
+  final res = await http.get(Uri.parse("$baseUrl/farms/list"));
+  return jsonDecode(res.body)["farms"];
+}
+
+static Future<void> createFarm(String name, String type) async {
+  await http.post(
+    Uri.parse("$baseUrl/farms/create"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "name": name,
+      "type": type,
+    }),
+  );
+}
