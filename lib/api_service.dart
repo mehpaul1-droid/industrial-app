@@ -76,3 +76,15 @@ static Future<Map<String, dynamic>> analyzeFarm(String name, String type) async 
 
   return jsonDecode(res.body);
 }
+static Future<List<dynamic>> getReports() async {
+  final res = await http.get(Uri.parse("$baseUrl/reports/list"));
+  return jsonDecode(res.body)["reports"];
+}
+
+static Future<void> addReport(Map<String, dynamic> data) async {
+  await http.post(
+    Uri.parse("$baseUrl/reports/add"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode(data),
+  );
+}
