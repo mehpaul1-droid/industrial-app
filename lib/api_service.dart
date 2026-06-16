@@ -63,3 +63,16 @@ static Future<void> createFarm(String name, String type) async {
     }),
   );
 }
+static Future<Map<String, dynamic>> analyzeFarm(String name, String type) async {
+  final res = await http.post(
+    Uri.parse("$baseUrl/ai/farm-analysis"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "farm_name": name,
+      "type": type,
+      "goal": "growth"
+    }),
+  );
+
+  return jsonDecode(res.body);
+}
