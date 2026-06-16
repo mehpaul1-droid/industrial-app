@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'api_service.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'reports_page.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
