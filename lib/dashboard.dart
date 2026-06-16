@@ -9,6 +9,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   Map<String, dynamic>? data;
+  int selectedMenu = 0;
 
   @override
   void initState() {
@@ -25,146 +26,149 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: _buildDrawer(),
+      appBar: AppBar(
+        title: Text("Farm AI System"),
+        backgroundColor: Colors.green[700],
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  // 📌 SIDEBAR
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Column(
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.green[700]),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                "Farm Control Panel",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ),
+
+          _menuItem(Icons.dashboard, "Dashboard", 0),
+          _menuItem(Icons.agriculture, "Farms", 1),
+          _menuItem(Icons.bar_chart, "Reports", 2),
+          _menuItem(Icons.smart_toy, "AI Optimizer", 3),
+          _menuItem(Icons.settings, "Settings", 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _menuItem(IconData icon, String title, int index) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      selected: selectedMenu == index,
+      onTap: () {
+        setState(() {
+          selectedMenu = index;
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  // 📌 BODY ROUTING
+  Widget _buildBody() {
+    switch (selectedMenu) {
+      case 0:
+        return _dashboardView();
+      case 1:
+        return _simplePage("Farms Management");
+      case 2:
+        return _simplePage("Reports Section");
+      case 3:
+        return _simplePage("AI Optimizer Panel");
+      case 4:
+        return _simplePage("Settings");
+      default:
+        return _dashboardView();
+    }
+  }
+
+  Widget _simplePage(String title) {
+    return Center(
+      child: Text(
+        title,
+        style: TextStyle(fontSize: 18),
+      ),
+    );
+  }
+
+  // 📊 MAIN DASHBOARD VIEW
+  Widget _dashboardView() {
     if (data == null) {
-      return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return Center(child: CircularProgressIndicator());
     }
 
     final consumption = data!["today_consumption"];
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: Text("Farm AI Dashboard"),
-        backgroundColor: Colors.green[700],
-        elevation: 0,
-      ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "📊 Dashboard Overview",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
 
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          SizedBox(height: 15),
 
-            // 🟢 KPI SECTION
-            Row(
-              children: [
-                _buildKPI("Corn", consumption["corn"].toString(), Icons.grain),
-                SizedBox(width: 10),
-                _buildKPI("Soy", consumption["soybean"].toString(), Icons.eco),
-              ],
+          Container(
+            height: 250,
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
             ),
-
-            SizedBox(height: 10),
-
-            Row(
-              children: [
-                _buildKPI("Bran", consumption["bran"].toString(), Icons.agriculture),
-                SizedBox(width: 10),
-                _buildKPI("Insect", consumption["insect_protein"].toString(), Icons.bug_report),
-              ],
-            ),
-
-            SizedBox(height: 25),
-
-            Text(
-              "📊 Feed Composition",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            SizedBox(height: 15),
-
-            Container(
-              height: 250,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: BarChart(
-                BarChartData(
-                  gridData: FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
-                  titlesData: FlTitlesData(show: false),
-                  barGroups: [
-                    _bar(0, consumption["corn"]),
-                    _bar(1, consumption["soybean"]),
-                    _bar(2, consumption["bran"]),
-                    _bar(3, consumption["insect_protein"]),
-                  ],
-                ),
+            child: BarChart(
+              BarChartData(
+                gridData: FlGridData(show: false),
+                titlesData: FlTitlesData(show: false),
+                borderData: FlBorderData(show: false),
+                barGroups: [
+                  _bar(0, consumption["corn"]),
+                  _bar(1, consumption["soybean"]),
+                  _bar(2, consumption["bran"]),
+                  _bar(3, consumption["insect_protein"]),
+                ],
               ),
             ),
+          ),
 
-            SizedBox(height: 20),
+          SizedBox(height: 20),
 
-            _buildCard(
-              "🔮 AI Prediction",
-              data!["prediction"],
-              Icons.insights,
-            ),
-
-            _buildCard(
-              "🍽 AI Feed Optimization",
-              data!["ai_ration_tip"],
-              Icons.smart_toy,
-            ),
-
-            _buildCard(
-              "📈 Profit Trend",
-              data!["profit_trend"],
-              Icons.trending_up,
-            ),
-          ],
-        ),
+          _card("AI Prediction", data!["prediction"]),
+          _card("AI Feed Suggestion", data!["ai_ration_tip"]),
+          _card("Profit Trend", data!["profit_trend"]),
+        ],
       ),
     );
   }
 
-  Widget _buildKPI(String title, String value, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.all(12),
-        margin: EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.green),
-            SizedBox(height: 8),
-            Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(title),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCard(String title, String subtitle, IconData icon) {
+  Widget _card(String title, String value) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.green),
-          SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(height: 5),
-                Text(subtitle),
-              ],
-            ),
-          )
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 5),
+          Text(value),
         ],
       ),
     );
@@ -174,7 +178,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return BarChartGroupData(
       x: x,
       barRods: [
-        BarChartRodData(toY: (y ?? 0).toDouble(), width: 14),
+        BarChartRodData(toY: (y ?? 0).toDouble()),
       ],
     );
   }
