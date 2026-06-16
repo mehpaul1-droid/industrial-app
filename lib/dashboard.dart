@@ -17,33 +17,16 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void loadData() async {
-    try {
-      final res = await ApiService.getDashboard();
-      setState(() {
-        data = res;
-      });
-    } catch (e) {
-      setState(() {
-        data = {
-          "today_consumption": {
-            "corn": 0,
-            "soybean": 0,
-            "bran": 0,
-            "insect_protein": 0
-          },
-          "prediction": "خطا در دریافت داده",
-          "ai_ration_tip": "اتصال به سرور برقرار نشد",
-          "profit_trend": "-"
-        };
-      });
-    }
+    final res = await ApiService.getDashboard();
+    setState(() {
+      data = res;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (data == null) {
       return Scaffold(
-        appBar: AppBar(title: Text("داشبورد صنعتی")),
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -51,60 +34,64 @@ class _DashboardPageState extends State<DashboardPage> {
     final consumption = data!["today_consumption"];
 
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text("داشبورد مدیریت دام"),
-        backgroundColor: Colors.green,
+        title: Text("Farm AI Dashboard"),
+        backgroundColor: Colors.green[700],
+        elevation: 0,
       ),
+
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
+            // 🟢 KPI SECTION
+            Row(
+              children: [
+                _buildKPI("Corn", consumption["corn"].toString(), Icons.grain),
+                SizedBox(width: 10),
+                _buildKPI("Soy", consumption["soybean"].toString(), Icons.eco),
+              ],
+            ),
+
+            SizedBox(height: 10),
+
+            Row(
+              children: [
+                _buildKPI("Bran", consumption["bran"].toString(), Icons.agriculture),
+                SizedBox(width: 10),
+                _buildKPI("Insect", consumption["insect_protein"].toString(), Icons.bug_report),
+              ],
+            ),
+
+            SizedBox(height: 25),
+
             Text(
-              "📊 مصرف خوراک امروز",
+              "📊 Feed Composition",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 15),
 
-            SizedBox(
+            Container(
               height: 250,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: BarChart(
                 BarChartData(
+                  gridData: FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                  titlesData: FlTitlesData(show: false),
                   barGroups: [
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(
-                          toY: (consumption["corn"] ?? 0).toDouble(),
-                        )
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(
-                          toY: (consumption["soybean"] ?? 0).toDouble(),
-                        )
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 3,
-                      barRods: [
-                        BarChartRodData(
-                          toY: (consumption["bran"] ?? 0).toDouble(),
-                        )
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 4,
-                      barRods: [
-                        BarChartRodData(
-                          toY: (consumption["insect_protein"] ?? 0).toDouble(),
-                        )
-                      ],
-                    ),
+                    _bar(0, consumption["corn"]),
+                    _bar(1, consumption["soybean"]),
+                    _bar(2, consumption["bran"]),
+                    _bar(3, consumption["insect_protein"]),
                   ],
                 ),
               ),
@@ -112,32 +99,83 @@ class _DashboardPageState extends State<DashboardPage> {
 
             SizedBox(height: 20),
 
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.trending_up),
-                title: Text("🔮 پیش‌بینی مصرف"),
-                subtitle: Text(data!["prediction"].toString()),
-              ),
+            _buildCard(
+              "🔮 AI Prediction",
+              data!["prediction"],
+              Icons.insights,
             ),
 
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.agriculture),
-                title: Text("🍽 پیشنهاد هوش مصنوعی"),
-                subtitle: Text(data!["ai_ration_tip"].toString()),
-              ),
+            _buildCard(
+              "🍽 AI Feed Optimization",
+              data!["ai_ration_tip"],
+              Icons.smart_toy,
             ),
 
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.show_chart),
-                title: Text("📈 روند سود"),
-                subtitle: Text(data!["profit_trend"].toString()),
-              ),
+            _buildCard(
+              "📈 Profit Trend",
+              data!["profit_trend"],
+              Icons.trending_up,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildKPI(String title, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(12),
+        margin: EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.green),
+            SizedBox(height: 8),
+            Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(String title, String subtitle, IconData icon) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.green),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 5),
+                Text(subtitle),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  BarChartGroupData _bar(int x, dynamic y) {
+    return BarChartGroupData(
+      x: x,
+      barRods: [
+        BarChartRodData(toY: (y ?? 0).toDouble(), width: 14),
+      ],
     );
   }
 }
