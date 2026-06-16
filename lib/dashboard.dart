@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'api_service.dart';
 import 'package:fl_chart/fl_chart.dart';
+
+import 'farms_page.dart';
 import 'reports_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -56,7 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
           _menuItem(Icons.dashboard, "Dashboard", 0),
           _menuItem(Icons.agriculture, "Farms", 1),
           _menuItem(Icons.bar_chart, "Reports", 2),
-          _menuItem(Icons.smart_toy, "AI Optimizer", 3),
+          _menuItem(Icons.smart_toy, "AI Panel", 3),
           _menuItem(Icons.settings, "Settings", 4),
         ],
       ),
@@ -77,28 +79,27 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 📌 BODY ROUTING
+  // 📌 THIS IS buildBody (اصلی‌ترین بخش)
   Widget _buildBody() {
-  switch (selectedMenu) {
-    case 0:
-      return _dashboardView();
+    switch (selectedMenu) {
 
-    case 1:
-      return FarmsPage(); // 👈 اینجا صفحه فارم‌ها
+      case 0:
+        return _dashboardView();
 
-    case 2:
-      return _simplePage("Reports Section");
+      case 1:
+        return FarmsPage();
 
-    case 3:
-      return _simplePage("AI Optimizer Panel");
+      case 2:
+        return ReportsPage();
 
-    case 4:
-      return _simplePage("Settings");
+      case 3:
+        return _simplePage("AI Optimizer Panel (Next Step)");
 
-    default:
-      return _dashboardView();
-  }
-}
+      case 4:
+        return _simplePage("Settings");
+
+      default:
+        return _dashboardView();
     }
   }
 
@@ -111,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 📊 MAIN DASHBOARD VIEW
+  // 📊 DASHBOARD VIEW
   Widget _dashboardView() {
     if (data == null) {
       return Center(child: CircularProgressIndicator());
@@ -124,6 +125,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           Text(
             "📊 Dashboard Overview",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -156,7 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
           SizedBox(height: 20),
 
           _card("AI Prediction", data!["prediction"]),
-          _card("AI Feed Suggestion", data!["ai_ration_tip"]),
+          _card("AI Suggestion", data!["ai_ration_tip"]),
           _card("Profit Trend", data!["profit_trend"]),
         ],
       ),
@@ -189,6 +191,5 @@ class _DashboardPageState extends State<DashboardPage> {
         BarChartRodData(toY: (y ?? 0).toDouble()),
       ],
     );
-    import 'farms_page.dart';
   }
 }
