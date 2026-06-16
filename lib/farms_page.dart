@@ -61,6 +61,23 @@ class _FarmsPageState extends State<FarmsPage> {
 
                 return Card(
                   child: ListTile(
+                    trailing: IconButton(
+  icon: Icon(Icons.auto_awesome),
+  onPressed: () async {
+    final result = await ApiService.analyzeFarm(
+      farm["name"],
+      farm["type"],
+    );
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("AI Result"),
+        content: Text(result["optimized_ration"].toString()),
+      ),
+    );
+  },
+),
                     leading: Icon(Icons.agriculture),
                     title: Text(farm["name"]),
                     subtitle: Text(farm["type"]),
