@@ -14,3 +14,5 @@ flutter:
 dependencies:
   fl_chart: ^0.69.0
 flutter pub get
+fl_chart: ^0.69.0
+flutter pub get
