@@ -150,7 +150,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   _bar(0, consumption["corn"]),
                   _bar(1, consumption["soybean"]),
                   _bar(2, consumption["bran"]),
-                  _bar(3, consumption["insect_protein"]),
+                  _bar(3, consumption["protein_iran_city"]),
                 ],
               ),
             ),
