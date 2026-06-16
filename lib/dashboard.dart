@@ -181,5 +181,6 @@ class _DashboardPageState extends State<DashboardPage> {
         BarChartRodData(toY: (y ?? 0).toDouble()),
       ],
     );
+    import 'farms_page.dart';
   }
 }
