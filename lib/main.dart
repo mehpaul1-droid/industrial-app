@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
-
+import 'dashboard.dart';
 void main() {
   runApp(MyApp());
 }
@@ -13,4 +13,7 @@ class MyApp extends StatelessWidget {
       home: LoginPage(),
     );
   }
+}
+routes: {
+  "/dashboard": (context) => DashboardPage(),
 }
