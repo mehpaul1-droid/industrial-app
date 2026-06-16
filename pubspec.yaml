@@ -11,3 +11,5 @@ dependencies:
 
 flutter:
   uses-material-design: true
+dependencies:
+  fl_chart: ^0.69.0
