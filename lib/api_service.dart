@@ -41,3 +41,10 @@ class ApiService {
     return jsonDecode(response.body);
   }
 }
+static Future<Map<String, dynamic>> getDashboard() async {
+  final response = await http.get(
+    Uri.parse("$baseUrl/dashboard/summary"),
+  );
+
+  return jsonDecode(response.body);
+}
