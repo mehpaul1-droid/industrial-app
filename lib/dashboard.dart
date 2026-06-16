@@ -78,19 +78,26 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // 📌 BODY ROUTING
   Widget _buildBody() {
-    switch (selectedMenu) {
-      case 0:
-        return _dashboardView();
-      case 1:
-        return _simplePage("Farms Management");
-      case 2:
-        return _simplePage("Reports Section");
-      case 3:
-        return _simplePage("AI Optimizer Panel");
-      case 4:
-        return _simplePage("Settings");
-      default:
-        return _dashboardView();
+  switch (selectedMenu) {
+    case 0:
+      return _dashboardView();
+
+    case 1:
+      return FarmsPage(); // 👈 اینجا صفحه فارم‌ها
+
+    case 2:
+      return _simplePage("Reports Section");
+
+    case 3:
+      return _simplePage("AI Optimizer Panel");
+
+    case 4:
+      return _simplePage("Settings");
+
+    default:
+      return _dashboardView();
+  }
+}
     }
   }
 
