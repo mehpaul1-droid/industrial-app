@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'farms_page.dart';
 import 'reports_page.dart';
+import 'ai_panel.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -93,7 +94,7 @@ class _DashboardPageState extends State<DashboardPage> {
         return ReportsPage();
 
       case 3:
-        return _simplePage("AI Optimizer Panel (Next Step)");
+  return AIPanel();
 
       case 4:
         return _simplePage("Settings");
