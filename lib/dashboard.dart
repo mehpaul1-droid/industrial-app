@@ -8,6 +8,7 @@ import 'ai_panel.dart';
 import 'analytics_page.dart';
 import 'farm_compare_page.dart';
 
+_menuItem(Icons.compare, "Compare Farms", 6),
 _menuItem(Icons.analytics, "Analytics", 5),
 
 class DashboardPage extends StatefulWidget {
