@@ -102,6 +102,9 @@ class _DashboardPageState extends State<DashboardPage> {
       case 4:
         return _simplePage("Settings");
 
+        case 5:
+  return AnalyticsPage();
+        
       default:
         return _dashboardView();
     }
