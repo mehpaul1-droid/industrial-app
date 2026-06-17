@@ -20,7 +20,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor: const Color(0xFF0D1117),
       appBar: AppBar(
-        title: const Text("Industrial AI Dashboard"),
+        title: const Text("سامانه هوشمند مدیریت دام و طیور"),
         backgroundColor: const Color(0xFF161B22),
       ),
       drawer: _buildSidebar(),
@@ -36,14 +36,14 @@ class _DashboardState extends State<Dashboard> {
         children: [
           const DrawerHeader(
             child: Text(
-              "Iran Protein AI",
+              "سامانه ایران پروتئین",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-          _item(Icons.dashboard, "Dashboard", 0),
-          _item(Icons.pets, "Livestock", 1),
-          _item(Icons.smart_toy, "AI Optimize", 2),
-          _item(Icons.analytics, "Reports", 3),
+          _item(Icons.dashboard, "داشبورد", 0),
+          _item(Icons.pets, "مدیریت دام", 1),
+          _item(Icons.smart_toy, "هوش مصنوعی", 2),
+          _item(Icons.analytics, "گزارش‌ها", 3),
         ],
       ),
     );
@@ -79,11 +79,11 @@ class _DashboardState extends State<Dashboard> {
   Widget _kpiRow() {
     return Row(
       children: const [
-        Expanded(child: _KpiCard(title: "Feed Efficiency", value: "87%")),
+        Expanded(child: _KpiCard(title: "بهره‌وری خوراک", value: "87%")),
         SizedBox(width: 10),
-        Expanded(child: _KpiCard(title: "Active Farms", value: "12")),
+        Expanded(child: _KpiCard(title: "مزارع فعال", value: "12")),
         SizedBox(width: 10),
-        Expanded(child: _KpiCard(title: "AI Accuracy", value: "94%")),
+        Expanded(child: _KpiCard(title: "دقت هوش مصنوعی", value: "94%")),
       ],
     );
   }
@@ -115,7 +115,7 @@ class _DashboardState extends State<Dashboard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
         Text(
-          "Feed Efficiency Trend",
+          "روند بهره‌وری خوراک",
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         SizedBox(height: 20),
@@ -125,7 +125,7 @@ class _DashboardState extends State<Dashboard> {
         ),
         SizedBox(height: 20),
         Text(
-          "System Status: ACTIVE",
+          "وضعیت سامانه: فعال",
           style: TextStyle(color: Colors.greenAccent),
         ),
       ],
@@ -136,7 +136,7 @@ class _DashboardState extends State<Dashboard> {
   Widget _livestockView() {
     return const Center(
       child: Text(
-        "Livestock Management Panel",
+        "پنل مدیریت دام و طیور",
         style: TextStyle(color: Colors.white70),
       ),
     );
@@ -172,7 +172,7 @@ class _DashboardState extends State<Dashboard> {
                   width: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text("Run AI Optimization"),
+              : const Text("اجرای تحلیل هوش مصنوعی"),
         ),
 
         const SizedBox(height: 20),
@@ -207,7 +207,7 @@ class _DashboardState extends State<Dashboard> {
         if (data.isEmpty) {
           return const Center(
             child: Text(
-              "No AI history yet",
+              "هنوز گزارشی ثبت نشده است",
               style: TextStyle(color: Colors.white70),
             ),
           );
@@ -228,13 +228,13 @@ class _DashboardState extends State<Dashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Animal: ${item['animal']}",
+                  Text("حیوان: ${item['animal']}",
                       style: const TextStyle(color: Colors.white)),
-                  Text("Score: ${item['score']}",
+                  Text("امتیاز: ${item['score']}",
                       style: const TextStyle(color: Colors.greenAccent)),
-                  Text("Goal: ${item['goal']}",
+                  Text("هدف: ${item['goal']}",
                       style: const TextStyle(color: Colors.white70)),
-                  Text("Time: ${item['timestamp']}",
+                  Text("زمان: ${item['timestamp']}",
                       style: const TextStyle(
                           color: Colors.white38, fontSize: 10)),
                 ],
