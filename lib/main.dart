@@ -18,7 +18,7 @@ class FarmAIApp extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: child!,
     );
-  },
+  }
   home: const Dashboard(),
 );
     );
