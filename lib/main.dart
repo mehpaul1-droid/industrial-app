@@ -10,12 +10,17 @@ class FarmAIApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Iran Protein AI',
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark(),
-      home: const Dashboard(),
+   return MaterialApp(
+  debugShowCheckedModeBanner: false,
+  title: 'سامانه ایران پروتئین',
+  builder: (context, child) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: child!,
+    );
+  },
+  home: const Dashboard(),
+);
     );
   }
 }
