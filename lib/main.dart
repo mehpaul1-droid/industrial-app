@@ -12,10 +12,9 @@ class FarmAIApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Industrial Farm AI',
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
+      title: 'Iran Protein AI',
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData.dark(),
       home: const Dashboard(),
     );
   }
