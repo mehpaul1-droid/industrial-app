@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -11,61 +13,125 @@ class _LoginPageState extends State<LoginPage> {
   final otpController = TextEditingController();
 
   bool otpSent = false;
+  bool loading = false;
 
   String message = "";
 
-  void sendOtp() async {
-    final res = await ApiService.sendOtp(phoneController.text);
+  Future<void> sendOtp() async {
     setState(() {
-      otpSent = true;
-      message = res["message"] ?? "";
+      loading = true;
+      message = "";
     });
+
+    try {
+      final res = await ApiService.sendOtp(phoneController.text);
+
+      setState(() {
+        otpSent = true;
+        message = res["message"] ?? "کد ارسال شد";
+      });
+    } catch (e) {
+      setState(() {
+        message = "خطا در ارسال کد: $e";
+      });
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
-  void verifyOtp() async {
-    final res = await ApiService.verifyOtp(
-      phoneController.text,
-      otpController.text,
-    );
-
+  Future<void> verifyOtp() async {
     setState(() {
-      message = res.toString();
+      loading = true;
+      message = "";
     });
 
-    if (res["access_token"] != null) {
-      Navigator.pushReplacementNamed(context, "/dashboard");
+    try {
+      final res = await ApiService.verifyOtp(
+        phone: phoneController.text,
+        otp: otpController.text,
+      );
+
+      setState(() {
+        message = res.toString();
+      });
+
+      if (res["access_token"] != null) {
+        Navigator.pushReplacementNamed(context, "/dashboard");
+      }
+    } catch (e) {
+      setState(() {
+        message = "خطا در تایید کد: $e";
+      });
+    } finally {
+      setState(() {
+        loading = false;
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    otpController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("ورود به سیستم")),
+      appBar: AppBar(
+        title: const Text("ورود به سیستم"),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
               controller: phoneController,
-              decoration: InputDecoration(labelText: "شماره موبایل"),
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: "شماره موبایل",
+              ),
             ),
+
+            const SizedBox(height: 12),
+
             if (!otpSent)
               ElevatedButton(
-                onPressed: sendOtp,
-                child: Text("دریافت کد"),
+                onPressed: loading ? null : sendOtp,
+                child: loading
+                    ? const CircularProgressIndicator()
+                    : const Text("دریافت کد"),
               ),
+
             if (otpSent) ...[
               TextField(
                 controller: otpController,
-                decoration: InputDecoration(labelText: "کد OTP"),
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "کد OTP",
+                ),
               ),
+
+              const SizedBox(height: 12),
+
               ElevatedButton(
-                onPressed: verifyOtp,
-                child: Text("تایید"),
+                onPressed: loading ? null : verifyOtp,
+                child: loading
+                    ? const CircularProgressIndicator()
+                    : const Text("تایید"),
               ),
             ],
-            SizedBox(height: 20),
-            Text(message),
+
+            const SizedBox(height: 20),
+
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.black87),
+            ),
           ],
         ),
       ),
