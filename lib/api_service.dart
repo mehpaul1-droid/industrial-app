@@ -88,3 +88,10 @@ static Future<void> addReport(Map<String, dynamic> data) async {
     body: jsonEncode(data),
   );
 }
+static Future<Map<String, dynamic>> compareFarms() async {
+  final res = await http.get(
+    Uri.parse("$baseUrl/ai/compare-farms"),
+  );
+
+  return jsonDecode(res.body);
+}
