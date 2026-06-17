@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'api_service.dart';
-import 'package:fl_chart/fl_chart.dart';
 
+// صفحات
 import 'farms_page.dart';
 import 'reports_page.dart';
 import 'ai_panel.dart';
-import 'analytics_page.dart';
 import 'farm_compare_page.dart';
-
-_menuItem(Icons.compare, "Compare Farms", 6),
-_menuItem(Icons.analytics, "Analytics", 5),
+import 'analytics_page.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -26,10 +23,20 @@ class _DashboardPageState extends State<DashboardPage> {
     loadData();
   }
 
+  // 🧪 موقت: بدون نیاز به backend برای تست UI
   void loadData() async {
-    final res = await ApiService.getDashboard();
     setState(() {
-      data = res;
+      data = {
+        "today_consumption": {
+          "corn": 12,
+          "soybean": 22,
+          "bran": 18,
+          "protein_iran_city": 7
+        },
+        "prediction": "Stable growth expected",
+        "ai_ration_tip": "Increase protein_iran_city slightly",
+        "profit_trend": "Positive trend"
+      };
     });
   }
 
@@ -51,7 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Column(
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.green[700]),
+            decoration: BoxDecoration(color: Colors.green),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
@@ -61,17 +68,18 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
 
-          _menuItem(Icons.dashboard, "Dashboard", 0),
-          _menuItem(Icons.agriculture, "Farms", 1),
-          _menuItem(Icons.bar_chart, "Reports", 2),
-          _menuItem(Icons.smart_toy, "AI Panel", 3),
-          _menuItem(Icons.settings, "Settings", 4),
+          _menu(Icons.dashboard, "Dashboard", 0),
+          _menu(Icons.agriculture, "Farms", 1),
+          _menu(Icons.bar_chart, "Reports", 2),
+          _menu(Icons.smart_toy, "AI Panel", 3),
+          _menu(Icons.analytics, "Analytics", 4),
+          _menu(Icons.compare, "Compare Farms", 5),
         ],
       ),
     );
   }
 
-  Widget _menuItem(IconData icon, String title, int index) {
+  Widget _menu(IconData icon, String title, int index) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
@@ -85,123 +93,67 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 📌 THIS IS buildBody (اصلی‌ترین بخش)
+  // 📌 ROUTING (buildBody)
   Widget _buildBody() {
     switch (selectedMenu) {
-
       case 0:
         return _dashboardView();
-
       case 1:
         return FarmsPage();
-
       case 2:
         return ReportsPage();
-
       case 3:
-  return AIPanel();
-
+        return AIPanel();
       case 4:
-        return _simplePage("Settings");
-
-     case 5:
-       return AnalyticsPage();
-        
-     case 6:
-       return FarmComparePage();
-        
+        return AnalyticsPage();
+      case 5:
+        return FarmComparePage();
       default:
         return _dashboardView();
     }
   }
 
-  Widget _simplePage(String title) {
-    return Center(
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 18),
-      ),
-    );
-  }
-
-  // 📊 DASHBOARD VIEW
+  // 📊 DASHBOARD UI
   Widget _dashboardView() {
     if (data == null) {
       return Center(child: CircularProgressIndicator());
     }
 
-    final consumption = data!["today_consumption"];
+    final c = data!["today_consumption"];
 
-    return SingleChildScrollView(
+    return Padding(
       padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Text(
             "📊 Dashboard Overview",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
 
-          SizedBox(height: 15),
+          SizedBox(height: 20),
 
-          Container(
-            height: 250,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: BarChart(
-              BarChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(show: false),
-                barGroups: [
-                  _bar(0, consumption["corn"]),
-                  _bar(1, consumption["soybean"]),
-                  _bar(2, consumption["bran"]),
-                  _bar(3, consumption["protein_iran_city"]),
-                ],
-              ),
-            ),
-          ),
+          _card("Corn", c["corn"].toString()),
+          _card("Soybean", c["soybean"].toString()),
+          _card("Bran", c["bran"].toString()),
+          _card("Protein Iran City", c["protein_iran_city"].toString()),
 
           SizedBox(height: 20),
 
           _card("AI Prediction", data!["prediction"]),
-          _card("AI Suggestion", data!["ai_ration_tip"]),
-          _card("Profit Trend", data!["profit_trend"]),
+          _card("AI Tip", data!["ai_ration_tip"]),
+          _card("Profit", data!["profit_trend"]),
         ],
       ),
     );
   }
 
   Widget _card(String title, String value) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+    return Card(
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(value),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 5),
-          Text(value),
-        ],
-      ),
-    );
-  }
-
-  BarChartGroupData _bar(int x, dynamic y) {
-    return BarChartGroupData(
-      x: x,
-      barRods: [
-        BarChartRodData(toY: (y ?? 0).toDouble()),
-      ],
     );
   }
 }
