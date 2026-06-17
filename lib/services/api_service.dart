@@ -2,20 +2,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
+
   static const String baseUrl =
       "https://iran-protein-farm.onrender.com";
 
   // ---------------- AI OPTIMIZATION ----------------
+
   static Future<Map<String, dynamic>> optimizeRation({
     required String animal,
     required int age,
     required String goal,
     List<String>? available,
   }) async {
-    final url = Uri.parse("$baseUrl/ai/optimize-ration");
 
     final response = await http.post(
-      url,
+      Uri.parse("$baseUrl/ai/optimize-ration"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -31,27 +32,45 @@ class ApiService {
       return jsonDecode(response.body);
     }
 
-    throw Exception("AI request failed: ${response.body}");
+    throw Exception(
+      "AI Error: ${response.body}",
+    );
   }
 
   // ---------------- HISTORY ----------------
-  static Future<List<dynamic>> getHistory() async {
-    final url = Uri.parse("$baseUrl/ai/history");
 
-    final response = await http.get(url);
+  static Future<List<dynamic>> getHistory() async {
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/ai/history"),
+    );
 
     if (response.statusCode == 200) {
+
       final data = jsonDecode(response.body);
 
-      if (data is Map && data.containsKey("data")) {
-        return data["data"];
-      }
-
-      return [];
+      return data["data"] ?? [];
     }
 
     throw Exception(
-      "History request failed: ${response.body}",
+      "History Error: ${response.body}",
+    );
+  }
+
+  // ---------------- DASHBOARD STATS ----------------
+
+  static Future<Map<String, dynamic>> getDashboardStats() async {
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/dashboard/stats"),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    throw Exception(
+      "Stats Error: ${response.body}",
     );
   }
 }
