@@ -74,3 +74,38 @@ class ApiService {
     );
   }
 }
+// ---------------- AUTH ----------------
+
+static Future<Map<String, dynamic>> sendOtp(String phone) async {
+  final response = await http.post(
+    Uri.parse("$baseUrl/auth/send-otp"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({"phone": phone}),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  }
+
+  throw Exception("Send OTP Error: ${response.body}");
+}
+
+static Future<Map<String, dynamic>> verifyOtp({
+  required String phone,
+  required String otp,
+}) async {
+  final response = await http.post(
+    Uri.parse("$baseUrl/auth/verify-otp"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "phone": phone,
+      "otp": otp,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  }
+
+  throw Exception("Verify OTP Error: ${response.body}");
+}
