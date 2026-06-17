@@ -28,3 +28,8 @@ class ApiService {
     }
   }
 }
+static Future<List<dynamic>> getHistory() async {
+  final res = await http.get(Uri.parse("$baseUrl/ai/history"));
+  final data = jsonDecode(res.body);
+  return data["data"];
+}
