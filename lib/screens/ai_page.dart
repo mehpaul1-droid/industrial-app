@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../core/farm_state.dart';
 
 class AiPage extends StatefulWidget {
   const AiPage({super.key});
@@ -15,8 +16,8 @@ class _AiPageState extends State<AiPage> {
   String animal = "مرغ گوشتی";
 
   bool loading = false;
-  Map<String, dynamic>? result;
   String? error;
+  Map<String, dynamic>? result;
 
   List<String> available = [];
 
@@ -38,6 +39,10 @@ class _AiPageState extends State<AiPage> {
       setState(() {
         result = res;
       });
+
+      // 🔥 SAVE TO CORE STATE
+      FarmState.setAIResult(res);
+
     } catch (e) {
       setState(() {
         error = "AI Error: $e";
@@ -49,7 +54,7 @@ class _AiPageState extends State<AiPage> {
     }
   }
 
-  void toggleIngredient(String item) {
+  void toggle(String item) {
     setState(() {
       if (available.contains(item)) {
         available.remove(item);
@@ -63,7 +68,7 @@ class _AiPageState extends State<AiPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("AI Control Center"),
+        title: const Text("FarmWise AI Control Center"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -71,67 +76,46 @@ class _AiPageState extends State<AiPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const Text(
-              "Farm Input",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            const Text("ورودی فارم",
+                style: TextStyle(fontWeight: FontWeight.bold)),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             DropdownButtonFormField<String>(
               value: animal,
               items: const [
-                DropdownMenuItem(
-                  value: "مرغ گوشتی",
-                  child: Text("مرغ گوشتی"),
-                ),
-                DropdownMenuItem(
-                  value: "بوقلمون",
-                  child: Text("بوقلمون"),
-                ),
-                DropdownMenuItem(
-                  value: "بلدرچین",
-                  child: Text("بلدرچین"),
-                ),
+                DropdownMenuItem(value: "مرغ گوشتی", child: Text("مرغ گوشتی")),
+                DropdownMenuItem(value: "بوقلمون", child: Text("بوقلمون")),
+                DropdownMenuItem(value: "بلدرچین", child: Text("بلدرچین")),
               ],
-              onChanged: (v) {
-                setState(() {
-                  animal = v!;
-                });
-              },
+              onChanged: (v) => setState(() => animal = v!),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             TextField(
               controller: ageController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "سن (روز)",
-              ),
+              decoration: const InputDecoration(labelText: "سن (روز)"),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             TextField(
               controller: goalController,
-              decoration: const InputDecoration(
-                labelText: "هدف (growth / egg / fattening)",
-              ),
+              decoration: const InputDecoration(labelText: "هدف تولید"),
             ),
 
             const SizedBox(height: 20),
 
-            const Text(
-              "Available Feed",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            const Text("نهاده‌های موجود",
+                style: TextStyle(fontWeight: FontWeight.bold)),
 
             Wrap(
               spacing: 8,
               children: [
                 _chip("corn"),
-                _chip("soybean_meal"),
+                _chip("soybean"),
                 _chip("wheat"),
                 _chip("insect_protein"),
                 _chip("vitamins"),
@@ -146,36 +130,33 @@ class _AiPageState extends State<AiPage> {
                 onPressed: loading ? null : runAI,
                 child: loading
                     ? const CircularProgressIndicator()
-                    : const Text("Run AI Optimization"),
+                    : const Text("اجرای AI"),
               ),
             ),
 
             const SizedBox(height: 20),
 
             if (error != null)
-              Text(
-                error!,
-                style: const TextStyle(color: Colors.red),
-              ),
+              Text(error!, style: const TextStyle(color: Colors.red)),
 
-            if (result != null) _buildResult(result!),
+            if (result != null) _resultBox(result!),
           ],
         ),
       ),
     );
   }
 
-  Widget _chip(String label) {
-    final selected = available.contains(label);
+  Widget _chip(String item) {
+    final selected = available.contains(item);
 
     return FilterChip(
-      label: Text(label),
+      label: Text(item),
       selected: selected,
-      onSelected: (_) => toggleIngredient(label),
+      onSelected: (_) => toggle(item),
     );
   }
 
-  Widget _buildResult(Map<String, dynamic> data) {
+  Widget _resultBox(Map<String, dynamic> data) {
     final ration = data["ration"] ?? {};
     final insight = data["insight"] ?? "";
 
@@ -188,23 +169,18 @@ class _AiPageState extends State<AiPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "AI Ration Result",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+
+          const Text("نتیجه AI",
+              style: TextStyle(fontWeight: FontWeight.bold)),
 
           const SizedBox(height: 10),
 
-          ...ration.entries.map((e) {
-            return Text("${e.key}: ${e.value}%");
-          }),
+          ...ration.entries.map((e) => Text("${e.key}: ${e.value}%")),
 
           const SizedBox(height: 10),
 
-          const Text(
-            "Insight",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          const Text("تحلیل",
+              style: TextStyle(fontWeight: FontWeight.bold)),
 
           Text(insight),
         ],
