@@ -1,203 +1,170 @@
 import 'package:flutter/material.dart';
-import 'api_service.dart';
+import '../services/api_service.dart';
+import '../widgets/kpi_card.dart';
 
-import 'farms_page.dart';
-import 'reports_page.dart';
-import 'ai_panel.dart';
-import 'farm_compare_page.dart';
-import 'analytics_page.dart';
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
 
-class DashboardPage extends StatefulWidget {
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-  Map<String, dynamic>? data;
+class _DashboardState extends State<Dashboard> {
+  String result = "";
+  bool loading = false;
+
+  final animalController = TextEditingController();
+  final ageController = TextEditingController();
+  final goalController = TextEditingController();
+
   int selectedMenu = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
+  Future<void> optimize() async {
+    setState(() => loading = true);
+
+    try {
+      final res = await ApiService.optimizeRation(
+        animal: animalController.text,
+        age: int.parse(ageController.text),
+        goal: goalController.text,
+      );
+
+      setState(() {
+        result = res.toString();
+      });
+    } catch (e) {
+      setState(() {
+        result = e.toString();
+      });
+    }
+
+    setState(() => loading = false);
   }
 
-  // 🧪 تست موقت (بدون backend)
-  void loadData() async {
-    setState(() {
-      data = {
-        "today_consumption": {
-          "corn": 12,
-          "soybean": 22,
-          "bran": 18,
-          "protein_iran_city": 7
-        },
-        "prediction": "Stable growth expected",
-        "ai_ration_tip": "Increase protein_iran_city slightly",
-        "profit_trend": "Positive trend"
-      };
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: _buildDrawer(),
-      appBar: AppBar(
-        title: Text("Farm AI Industrial Dashboard"),
-        backgroundColor: Colors.green[700],
-      ),
-      body: _buildBody(),
-    );
-  }
-
-  // 📌 SIDEBAR
-  Widget _buildDrawer() {
-    return Drawer(
+  Widget sidebar() {
+    return Container(
+      width: 220,
+      color: const Color(0xFF111827),
       child: Column(
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Colors.green),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                "Industrial Control Panel",
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
-          ),
-
-          _menu(Icons.dashboard, "Dashboard", 0),
-          _menu(Icons.agriculture, "Farms", 1),
-          _menu(Icons.bar_chart, "Reports", 2),
-          _menu(Icons.smart_toy, "AI Panel", 3),
-          _menu(Icons.analytics, "Analytics", 4),
-          _menu(Icons.compare, "Compare Farms", 5),
+          const SizedBox(height: 40),
+          const Icon(Icons.factory, color: Colors.white, size: 40),
+          const SizedBox(height: 20),
+          menuItem(Icons.dashboard, "Dashboard", 0),
+          menuItem(Icons.analytics, "Reports", 1),
+          menuItem(Icons.settings, "Settings", 2),
         ],
       ),
     );
   }
 
-  Widget _menu(IconData icon, String title, int index) {
+  Widget menuItem(IconData icon, String title, int index) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
       selected: selectedMenu == index,
-      onTap: () {
-        setState(() {
-          selectedMenu = index;
-        });
-        Navigator.pop(context);
-      },
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
+      onTap: () => setState(() => selectedMenu = index),
     );
   }
 
-  // 📌 ROUTING
-  Widget _buildBody() {
-    switch (selectedMenu) {
-      case 0:
-        return _dashboardView();
-      case 1:
-        return FarmsPage();
-      case 2:
-        return ReportsPage();
-      case 3:
-        return AIPanel();
-      case 4:
-        return AnalyticsPage();
-      case 5:
-        return FarmComparePage();
-      default:
-        return _dashboardView();
-    }
+  Widget kpiRow() {
+    return Row(
+      children: const [
+        Expanded(child: KPICard(title: "Animals", value: "120", icon: Icons.pets)),
+        SizedBox(width: 10),
+        Expanded(child: KPICard(title: "Feed Stock", value: "540kg", icon: Icons.grass)),
+        SizedBox(width: 10),
+        Expanded(child: KPICard(title: "AI Runs", value: "32", icon: Icons.smart_toy)),
+      ],
+    );
   }
 
-  // 📊 DASHBOARD INDUSTRIAL VIEW
-  Widget _dashboardView() {
-    if (data == null) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    final c = data!["today_consumption"];
-
-    return SingleChildScrollView(
+  Widget aiPanel() {
+    return Card(
+      color: const Color(0xFF1F2937),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "📊 Industrial Dashboard",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            const Text("AI Feed Optimizer",
+                style: TextStyle(color: Colors.white, fontSize: 18)),
+
+            TextField(
+              controller: animalController,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(labelText: "Animal"),
+            ),
+            TextField(
+              controller: ageController,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(labelText: "Age"),
+            ),
+            TextField(
+              controller: goalController,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(labelText: "Goal"),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 10),
 
-            // 🟢 KPI ROW
-            Row(
-              children: [
-                _kpiCard("Feed", "120 kg"),
-                _kpiCard("Cost", "\$450"),
-                _kpiCard("Profit", "\$120"),
-              ],
+            ElevatedButton(
+              onPressed: optimize,
+              child: loading
+                  ? const CircularProgressIndicator()
+                  : const Text("Run AI Optimization"),
             ),
-
-            SizedBox(height: 20),
-
-            Text("📦 Consumption"),
-
-            SizedBox(height: 10),
-
-            _card("Corn", c["corn"].toString()),
-            _card("Soybean", c["soybean"].toString()),
-            _card("Bran", c["bran"].toString()),
-            _card("Protein (Iran City)", c["protein_iran_city"].toString()),
-
-            SizedBox(height: 20),
-
-            Text("🧠 AI Insights"),
-
-            SizedBox(height: 10),
-
-            _card("Prediction", data!["prediction"]),
-            _card("Recommendation", data!["ai_ration_tip"]),
-            _card("Trend", data!["profit_trend"]),
           ],
         ),
       ),
     );
   }
 
-  // 🧱 KPI CARD (اینجا باید اضافه بشه)
-  Widget _kpiCard(String title, String value) {
-    return Expanded(
-      child: Card(
-        elevation: 3,
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Text(title, style: TextStyle(fontSize: 14)),
-              SizedBox(height: 5),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+  Widget reportPanel() {
+    return Card(
+      color: const Color(0xFF111827),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Text(
+            result.isEmpty ? "No data yet" : result,
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),
     );
   }
 
-  Widget _card(String title, String value) {
-    return Card(
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(value),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0B1220),
+
+      body: Row(
+        children: [
+          sidebar(),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  kpiRow(),
+                  const SizedBox(height: 20),
+
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(flex: 2, child: aiPanel()),
+                        const SizedBox(width: 10),
+                        Expanded(flex: 3, child: reportPanel()),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
