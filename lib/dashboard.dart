@@ -6,6 +6,7 @@ import 'farms_page.dart';
 import 'reports_page.dart';
 import 'ai_panel.dart';
 import 'analytics_page.dart';
+import 'farm_compare_page.dart';
 
 _menuItem(Icons.analytics, "Analytics", 5),
 
@@ -102,8 +103,11 @@ class _DashboardPageState extends State<DashboardPage> {
       case 4:
         return _simplePage("Settings");
 
-        case 5:
-  return AnalyticsPage();
+     case 5:
+       return AnalyticsPage();
+        
+     case 6:
+       return FarmComparePage();
         
       default:
         return _dashboardView();
