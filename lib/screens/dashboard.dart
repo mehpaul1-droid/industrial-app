@@ -197,14 +197,56 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // ---------------- REPORTS ----------------
-  Widget _reportsView() {
-    return const Center(
-      child: Text(
-        "Reports & Analytics (Coming Soon)",
-        style: TextStyle(color: Colors.white70),
-      ),
-    );
-  }
+Widget _reportsView() {
+  return FutureBuilder(
+    future: ApiService.getHistory(),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      final data = snapshot.data as List;
+
+      return ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          final item = data[index];
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D1117),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Animal: ${item['animal']}",
+                  style: const TextStyle(color: Colors.white),
+                ),
+                Text(
+                  "Score: ${item['score']}",
+                  style: const TextStyle(color: Colors.greenAccent),
+                ),
+                Text(
+                  "Goal: ${item['goal']}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "Time: ${item['timestamp']}",
+                  style: const TextStyle(color: Colors.white38, fontSize: 10),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
 }
 
 // ---------------- KPI CARD ----------------
