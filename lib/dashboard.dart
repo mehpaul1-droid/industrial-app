@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'api_service.dart';
 
-// صفحات
 import 'farms_page.dart';
 import 'reports_page.dart';
 import 'ai_panel.dart';
@@ -23,7 +22,7 @@ class _DashboardPageState extends State<DashboardPage> {
     loadData();
   }
 
-  // 🧪 موقت: بدون نیاز به backend برای تست UI
+  // 🧪 تست موقت (بدون backend)
   void loadData() async {
     setState(() {
       data = {
@@ -45,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       drawer: _buildDrawer(),
       appBar: AppBar(
-        title: Text("Farm AI System"),
+        title: Text("Farm AI Industrial Dashboard"),
         backgroundColor: Colors.green[700],
       ),
       body: _buildBody(),
@@ -62,7 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                "Farm Control Panel",
+                "Industrial Control Panel",
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
@@ -93,7 +92,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 📌 ROUTING (buildBody)
+  // 📌 ROUTING
   Widget _buildBody() {
     switch (selectedMenu) {
       case 0:
@@ -113,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // 📊 DASHBOARD UI
+  // 📊 DASHBOARD INDUSTRIAL VIEW
   Widget _dashboardView() {
     if (data == null) {
       return Center(child: CircularProgressIndicator());
@@ -121,29 +120,75 @@ class _DashboardPageState extends State<DashboardPage> {
 
     final c = data!["today_consumption"];
 
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "📊 Dashboard Overview",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "📊 Industrial Dashboard",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+
+            SizedBox(height: 20),
+
+            // 🟢 KPI ROW
+            Row(
+              children: [
+                _kpiCard("Feed", "120 kg"),
+                _kpiCard("Cost", "\$450"),
+                _kpiCard("Profit", "\$120"),
+              ],
+            ),
+
+            SizedBox(height: 20),
+
+            Text("📦 Consumption"),
+
+            SizedBox(height: 10),
+
+            _card("Corn", c["corn"].toString()),
+            _card("Soybean", c["soybean"].toString()),
+            _card("Bran", c["bran"].toString()),
+            _card("Protein (Iran City)", c["protein_iran_city"].toString()),
+
+            SizedBox(height: 20),
+
+            Text("🧠 AI Insights"),
+
+            SizedBox(height: 10),
+
+            _card("Prediction", data!["prediction"]),
+            _card("Recommendation", data!["ai_ration_tip"]),
+            _card("Trend", data!["profit_trend"]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 🧱 KPI CARD (اینجا باید اضافه بشه)
+  Widget _kpiCard(String title, String value) {
+    return Expanded(
+      child: Card(
+        elevation: 3,
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Text(title, style: TextStyle(fontSize: 14)),
+              SizedBox(height: 5),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-
-          SizedBox(height: 20),
-
-          _card("Corn", c["corn"].toString()),
-          _card("Soybean", c["soybean"].toString()),
-          _card("Bran", c["bran"].toString()),
-          _card("Protein Iran City", c["protein_iran_city"].toString()),
-
-          SizedBox(height: 20),
-
-          _card("AI Prediction", data!["prediction"]),
-          _card("AI Tip", data!["ai_ration_tip"]),
-          _card("Profit", data!["profit_trend"]),
-        ],
+        ),
       ),
     );
   }
