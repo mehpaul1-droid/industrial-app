@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../widgets/charts.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -54,9 +55,7 @@ class _DashboardState extends State<Dashboard> {
       title: Text(title, style: const TextStyle(color: Colors.white)),
       selected: selectedIndex == index,
       onTap: () {
-        setState(() {
-          selectedIndex = index;
-        });
+        setState(() => selectedIndex = index);
         Navigator.pop(context);
       },
     );
@@ -110,13 +109,29 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  // ---------------- DASHBOARD ----------------
+  // ---------------- DASHBOARD (WITH CHART) ----------------
   Widget _dashboardView() {
-    return const Center(
-      child: Text(
-        "Welcome to Industrial AI System",
-        style: TextStyle(color: Colors.white, fontSize: 18),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        Text(
+          "Feed Efficiency Trend",
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        SizedBox(height: 20),
+
+        SizedBox(
+          height: 200,
+          child: FeedEfficiencyChart(),
+        ),
+
+        SizedBox(height: 20),
+
+        Text(
+          "System Status: ACTIVE",
+          style: TextStyle(color: Colors.greenAccent),
+        ),
+      ],
     );
   }
 
@@ -130,7 +145,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  // ---------------- AI OPTIMIZE (REAL API) ----------------
+  // ---------------- AI OPTIMIZE ----------------
   Widget _aiOptimizeView() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,13 +162,9 @@ class _DashboardState extends State<Dashboard> {
                 available: ["soybean_meal"],
               );
 
-              setState(() {
-                aiResult = result;
-              });
+              setState(() => aiResult = result);
             } catch (e) {
-              setState(() {
-                aiResult = {"error": e.toString()};
-              });
+              setState(() => aiResult = {"error": e.toString()});
             }
 
             setState(() => loading = false);
