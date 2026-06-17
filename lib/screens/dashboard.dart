@@ -11,12 +11,15 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int selectedIndex = 0;
 
+  Map<String, dynamic>? aiResult;
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0D1117),
       appBar: AppBar(
-        title: const Text("Industrial AI Panel"),
+        title: const Text("Industrial AI Dashboard"),
         backgroundColor: const Color(0xFF161B22),
       ),
       drawer: _buildSidebar(),
@@ -32,7 +35,7 @@ class _DashboardState extends State<Dashboard> {
         children: [
           const DrawerHeader(
             child: Text(
-              "Farm AI System",
+              "Iran Protein AI",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
@@ -73,7 +76,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  // ---------------- KPI CARDS ----------------
+  // ---------------- KPI ----------------
   Widget _kpiRow() {
     return Row(
       children: const [
@@ -99,28 +102,95 @@ class _DashboardState extends State<Dashboard> {
         index: selectedIndex,
         children: [
           _dashboardView(),
-          _simpleView("Livestock Management"),
-          _simpleView("AI Optimization Panel"),
-          _simpleView("Reports & Analytics"),
+          _livestockView(),
+          _aiOptimizeView(),
+          _reportsView(),
         ],
       ),
     );
   }
 
+  // ---------------- DASHBOARD ----------------
   Widget _dashboardView() {
     return const Center(
       child: Text(
-        "Welcome to Industrial AI Dashboard",
+        "Welcome to Industrial AI System",
         style: TextStyle(color: Colors.white, fontSize: 18),
       ),
     );
   }
 
-  Widget _simpleView(String title) {
-    return Center(
+  // ---------------- LIVESTOCK ----------------
+  Widget _livestockView() {
+    return const Center(
       child: Text(
-        title,
-        style: const TextStyle(color: Colors.white70, fontSize: 16),
+        "Livestock Management Panel",
+        style: TextStyle(color: Colors.white70),
+      ),
+    );
+  }
+
+  // ---------------- AI OPTIMIZE (REAL API) ----------------
+  Widget _aiOptimizeView() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            setState(() => loading = true);
+
+            try {
+              final result = await ApiService.optimizeRation(
+                animal: "chicken",
+                age: 25,
+                goal: "growth",
+                available: ["soybean_meal"],
+              );
+
+              setState(() {
+                aiResult = result;
+              });
+            } catch (e) {
+              setState(() {
+                aiResult = {"error": e.toString()};
+              });
+            }
+
+            setState(() => loading = false);
+          },
+          child: loading
+              ? const SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text("Run AI Optimization"),
+        ),
+
+        const SizedBox(height: 20),
+
+        if (aiResult != null)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              aiResult.toString(),
+              style: const TextStyle(color: Colors.greenAccent),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // ---------------- REPORTS ----------------
+  Widget _reportsView() {
+    return const Center(
+      child: Text(
+        "Reports & Analytics (Coming Soon)",
+        style: TextStyle(color: Colors.white70),
       ),
     );
   }
@@ -141,20 +211,25 @@ class _KpiCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: const Color(0xFF0D1117),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          Text(
+            title,
+            style: const TextStyle(color: Colors.white60, fontSize: 12),
+          ),
           const SizedBox(height: 8),
-          Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
