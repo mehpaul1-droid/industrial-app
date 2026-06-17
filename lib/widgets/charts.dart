@@ -8,23 +8,65 @@ class FeedEfficiencyChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return LineChart(
       LineChartData(
-        gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
-        borderData: FlBorderData(show: false),
+        minX: 0,
+        maxX: 42,
+        minY: 0,
+        maxY: 3.5,
+
+        gridData: FlGridData(
+          show: true,
+        ),
+
+        borderData: FlBorderData(
+          show: true,
+        ),
+
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+            ),
+          ),
+
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 7,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 10,
+                  ),
+                );
+              },
+            ),
+          ),
+
+          topTitles: const AxisTitles(),
+          rightTitles: const AxisTitles(),
+        ),
 
         lineBarsData: [
           LineChartBarData(
-            spots: const [
-              FlSpot(0, 3),
-              FlSpot(1, 3.5),
-              FlSpot(2, 4),
-              FlSpot(3, 3.8),
-              FlSpot(4, 4.5),
-              FlSpot(5, 5),
-            ],
             isCurved: true,
-            barWidth: 3,
-            dotData: FlDotData(show: false),
+            barWidth: 4,
+
+            spots: const [
+              FlSpot(0, 0.04),
+              FlSpot(7, 0.18),
+              FlSpot(14, 0.45),
+              FlSpot(21, 0.90),
+              FlSpot(28, 1.50),
+              FlSpot(35, 2.20),
+              FlSpot(42, 3.00),
+            ],
+
+            dotData: FlDotData(
+              show: true,
+            ),
           ),
         ],
       ),
