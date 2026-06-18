@@ -1,22 +1,20 @@
-name: industrial_app
-description: Industrial AI App
-
-publish_to: "none"
-
-environment:
-  sdk: ">=3.0.0 <4.0.0"
-
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
-  http: ^1.1.0
-  fl_chart: ^0.69.0
+  cupertino_icons: ^1.0.8
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  # HTTP requests (برای AI و API)
+  http: ^1.2.2
 
-flutter:
-  uses-material-design: true
+  # نمودارها
+  fl_chart: ^0.68.0
+
+  # دیتابیس محلی (Offline Farm Storage)
+  sqflite: ^2.3.3+1
+
+  # مسیر فایل‌ها (برای SQLite)
+  path: ^1.9.0
+
+  # مدیریت state ساده (اختیاری ولی مفید برای داشبورد)
+  provider: ^6.1.2
