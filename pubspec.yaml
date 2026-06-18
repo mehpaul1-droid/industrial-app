@@ -1,20 +1,37 @@
+name: industrial_app
+description: FarmWise AI System
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
 
-  # HTTP requests (برای AI و API)
+  # HTTP requests (AI + API)
   http: ^1.2.2
 
-  # نمودارها
+  # Charts
   fl_chart: ^0.68.0
 
-  # دیتابیس محلی (Offline Farm Storage)
+  # Local database (offline farm storage)
   sqflite: ^2.3.3+1
 
-  # مسیر فایل‌ها (برای SQLite)
+  # Path helper for SQLite
   path: ^1.9.0
 
-  # مدیریت state ساده (اختیاری ولی مفید برای داشبورد)
+  # State management (optional but useful)
   provider: ^6.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
