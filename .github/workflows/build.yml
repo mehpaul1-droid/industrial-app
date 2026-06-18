@@ -1,38 +1,38 @@
-name: Build Flutter APK
+name: Flutter CI
 
 on:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.24.5'
+          channel: stable
 
-      - name: Create Flutter project structure
-        run: |
-          flutter create temp_app
-          cp -r lib temp_app/
-          cp pubspec.yaml temp_app/
-
-      - name: Move into project
-        working-directory: temp_app
+      - name: Install dependencies
         run: flutter pub get
 
       - name: Build APK
-        working-directory: temp_app
         run: flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: apk
-          path: temp_app/build/app/outputs/flutter-apk/app-release.apk
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
